@@ -1,0 +1,12 @@
+---
+hello_world:
+  module: hello
+  class: HelloWorld
+
+meshcore_map:
+  module: meshcore_map
+  class: MeshCoreMapEntities
+
+meshcore_hops:
+  module: meshcore_hops
+  class: MeshCoreHops
