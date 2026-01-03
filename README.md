@@ -18,7 +18,12 @@ AppDaemon apps and dashboard cards for Home Assistant that enhance the MeshCore 
 
 - Home Assistant with [MeshCore integration](https://github.com/meshcore-dev/meshcore-ha) installed
 - AppDaemon add-on
-- HACS custom cards: `auto-entities`, `config-template-card`, `multiple-entity-row`, `card-mod`
+- HACS Frontend cards:
+  - [auto-entities](https://github.com/thomasloven/lovelace-auto-entities)
+  - [config-template-card](https://github.com/iantrich/config-template-card)
+  - [multiple-entity-row](https://github.com/benct/lovelace-multiple-entity-row)
+  - [card-mod](https://github.com/thomasloven/lovelace-card-mod)
+  - [ha-map-card](https://github.com/nathan-gs/ha-map-card)
 
 ## Installation
 
