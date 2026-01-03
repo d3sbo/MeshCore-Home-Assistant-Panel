@@ -66,3 +66,55 @@ Go to **Settings → Devices & Services → Helpers** and create:
 ### 2. Install AppDaemon Apps
 
 [Continue with AppDaemon installation...]
+
+### 2. Install AppDaemon Apps
+
+#### Finding Your AppDaemon Directory
+
+The location depends on your installation method:
+
+**Home Assistant OS / Supervised (AppDaemon add-on):**
+```
+/addon_configs/a0d7b954_appdaemon/apps/
+```
+Access via: `\\your-ha-ip\addon_configs\########_appdaemon\apps\`
+
+**Docker / Manual Installation:**
+```
+/config/appdaemon/apps/
+```
+Access via: `\\your-ha-ip\config\appdaemon\apps\`
+
+**To find your path:**
+1. Install File Editor or Studio Code Server add-on
+2. Look for existing AppDaemon files like `hello.py`
+3. Note the directory path shown
+
+#### Installation Steps
+
+1. Copy the app files to your AppDaemon apps directory:
+   - `meshcore_map.py`
+   - `meshcore_hops.py`
+
+2. Edit `apps.yaml` in the same directory and add:
+```yaml
+   meshcore_map:
+     module: meshcore_map
+     class: MeshCoreMapEntities
+
+   meshcore_hops:
+     module: meshcore_hops
+     class: MeshCoreHops
+```
+
+3. Restart AppDaemon (Settings → Add-ons → AppDaemon → Restart)
+
+4. Verify by checking AppDaemon logs for:
+```
+   INFO AppDaemon: Calling initialize() for meshcore_map
+   INFO AppDaemon: Calling initialize() for meshcore_hops
+   INFO meshcore_map: MeshCoreMapEntities initialized
+   INFO meshcore_hops: MeshCoreHops initialized
+```
+
+5. Confirm `sensor.meshcore_map_entities` exists in Developer Tools → States
