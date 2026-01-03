@@ -1,0 +1,7 @@
+type: custom:mushroom-select-card
+entity: input_select.meshcore_type
+fill_container: false
+icon_color: accent
+grid_options:
+  columns: 12
+  rows: 2
