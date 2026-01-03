@@ -1,0 +1,18 @@
+type: custom:config-template-card
+entities:
+  - sensor.meshcore_map_entities
+card:
+  type: custom:map-card
+  zoom: 8
+  auto_fit: false
+  fit_zones: true
+  card_size: 8
+  cluster: true
+  display: marker
+  icon: mdi:cake
+  gradual_opacity: 100
+  focus_entity: zone.home
+  entities: ${states['sensor.meshcore_map_entities'].attributes.entities}
+grid_options:
+  columns: 24
+  rows: 8
