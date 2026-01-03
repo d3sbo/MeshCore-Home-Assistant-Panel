@@ -35,6 +35,7 @@ AppDaemon apps and dashboard cards for Home Assistant that enhance the MeshCore 
   - [multiple-entity-row](https://github.com/benct/lovelace-multiple-entity-row)
   - [card-mod](https://github.com/thomasloven/lovelace-card-mod)
   - [ha-map-card](https://github.com/nathan-gs/ha-map-card)
+  - [mushroom-cards](https://github.com/piitaya/lovelace-mushroom) (for input controls)
 
 ## Installation
 
