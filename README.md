@@ -47,7 +47,7 @@ Go to **Settings → Devices & Services → Helpers** and create:
 - Name: `MeshCore Threshold Hours`
 - Entity ID: `input_number.meshcore_threshold_hours`
 - Minimum: `1`
-- Maximum: `168` (7 days)
+- Maximum: `168` (7 days) I like 672 hours
 - Step: `1`
 - Unit: `hours`
 - Default: `12`
