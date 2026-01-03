@@ -14,6 +14,17 @@ AppDaemon apps and dashboard cards for Home Assistant that enhance the MeshCore 
 ✅ Message hop tracking with signal quality (SNR/RSSI)  
 ✅ Clean, multi-column dashboard views  
 
+## Screenshots
+
+### Dynamic Contact List with Hops and SNR
+![Contact List](dashboard/screenshots/contact-list.png)
+
+### Live Map Visualization
+![Map View](dashboard/screenshots/map-view.png)
+
+### Filtered by Node Type
+![Filtered View](dashboard/screenshots/filtered-view.png)
+
 ## Requirements
 
 - Home Assistant with [MeshCore integration](https://github.com/meshcore-dev/meshcore-ha) installed
