@@ -1,0 +1,5 @@
+type: custom:mushroom-number-card
+entity: input_number.meshcore_threshold_hours
+grid_options:
+  columns: 12
+  rows: 2
