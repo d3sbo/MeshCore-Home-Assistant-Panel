@@ -17,13 +17,13 @@ AppDaemon apps and dashboard cards for Home Assistant that enhance the MeshCore 
 ## Screenshots
 
 ### Dynamic Contact List with Hops and SNR
-![Contact List](dashboard/screenshots/contact-list.png)
+![Contact List](dashboard/screenshots/meshcore-contact.png)
 
 ### Live Map Visualization
-![Map View](dashboard/screenshots/map-view.png)
+![Map View](dashboard/screenshots/meshcore-map.png)
 
 ### Filtered by Node Type
-![Filtered View](dashboard/screenshots/filtered-view.png)
+![Filtered View](dashboard/screenshots/meshcore-helpers.png)
 
 ## Requirements
 
