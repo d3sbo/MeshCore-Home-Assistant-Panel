@@ -1,84 +1,165 @@
-type: custom:auto-entities
-card:
-  type: entities
-  title: 📬 Meshcore Last Advert Within The Last
-  card_mod:
-    style: |
-      ha-card .card-header {
-        --ha-card-header-font-size: 24px;
-      }
-      ha-card .card-header::after {
-        content: " ({% set h = states('input_number.meshcore_threshold_hours') | float %}{% set days = (h / 24) | int %}{% set hours = (h % 24) | int %}{% if days > 0 %}{{ days }}d {{ hours }}h{% else %}{{ h | int }}h{% endif %}) - {{ states('sensor.meshcore_map_entities') }} contacts";
-      }
-filter:
-  template: >
-    {% set threshold_hrs = states('input_number.meshcore_threshold_hours') |
-    float(12) %} {% set threshold_sec = threshold_hrs * 3600 %} {% set now_ts =
-    as_timestamp(now()) %} {% set selected_type =
-    states('input_select.meshcore_type') %} {% set ns = namespace(entities=[])
-    %} {% for sensor in states.binary_sensor %}
-      {% if 'meshcore' in sensor.entity_id and '_contact' in sensor.entity_id %}
-        {% set last_advert = sensor.attributes.get('last_advert') %}
-        {% set node_type = sensor.attributes.get('node_type_str') %}
-        {% set pubkey = sensor.attributes.get('pubkey_prefix', '') %}
-        
-        {% if last_advert and last_advert is number %}
-          {% if (now_ts - last_advert) < threshold_sec %}
-            {% if selected_type == 'All' or node_type|lower|replace(' ', '') == selected_type|lower|replace(' ', '') %}
+type: vertical-stack
+cards:
+  - type: custom:mushroom-select-card
+    entity: input_select.meshcore_sort_by
+    icon: mdi:sort
+    fill_container: false
+  - type: conditional
+    conditions:
+      - entity: input_select.meshcore_sort_by
+        state: Last Advert
+    card:
+      type: custom:auto-entities
+      card:
+        type: entities
+        title: 📡 Meshcore Recent Advertisements Within The Last
+        card_mod:
+          style: |
+            ha-card .card-header {
+              --ha-card-header-font-size: 24px;
+            }
+            ha-card .card-header::after {
+              content: " ({% set h = states('input_number.meshcore_threshold_hours') | float %}{% set days = (h / 24) | int %}{% set hours = (h % 24) | int %}{% if days > 0 %}{{ days }}d {{ hours }}h{% else %}{{ h | int }}h{% endif %}) - {{ states('sensor.meshcore_map_entities') }} contacts";
+            }
+      filter:
+        template: >
+          {% set threshold_hrs = states('input_number.meshcore_threshold_hours')
+          | float(12) %} {% set threshold_sec = threshold_hrs * 3600 %} {% set
+          now_ts = as_timestamp(now()) %} {% set selected_type =
+          states('input_select.meshcore_type') %} {% set ns =
+          namespace(entities=[]) %}
+
+          {% for sensor in states.binary_sensor %}
+            {% if 'meshcore' in sensor.entity_id and '_contact' in sensor.entity_id %}
+              {% set last_advert = sensor.attributes.get('last_advert') %}
+              {% set node_type = sensor.attributes.get('node_type_str') %}
+              {% set pubkey = sensor.attributes.get('pubkey_prefix', '') %}
               
-              {% set time_diff = now_ts - last_advert %}
-              {% set hours = (time_diff / 3600) | int %}
-              {% set minutes = ((time_diff % 3600) / 60) | int %}
-              {% set days = (hours / 24) | int %}
-              {% if days > 0 %}
-                {% set time_ago = days ~ 'd ' ~ (hours % 24) ~ 'h ago' %}
-              {% elif hours > 0 %}
-                {% set time_ago = hours ~ 'h ' ~ minutes ~ 'm ago' %}
-              {% else %}
-                {% set time_ago = minutes ~ 'm ago' %}
+              {% if last_advert and last_advert is number %}
+                {% if (now_ts - last_advert) < threshold_sec %}
+                  {% if selected_type == 'All' or node_type|lower|replace(' ', '') == selected_type|lower|replace(' ', '') %}
+                    
+                    {% set time_diff = now_ts - last_advert %}
+                    {% set hours = (time_diff / 3600) | int %}
+                    {% set minutes = ((time_diff % 3600) / 60) | int %}
+                    {% set days = (hours / 24) | int %}
+                    {% if days > 0 %}
+                      {% set time_ago = days ~ 'd ' ~ (hours % 24) ~ 'h ago' %}
+                    {% elif hours > 0 %}
+                      {% set time_ago = hours ~ 'h ' ~ minutes ~ 'm ago' %}
+                    {% else %}
+                      {% set time_ago = minutes ~ 'm ago' %}
+                    {% endif %}
+                    
+                    {% set hop_sensor = 'sensor.meshcore_hops_' ~ pubkey %}
+                    {% set hops = states(hop_sensor) %}
+                    
+                    {% set entities_list = [
+                      {
+                        'entity': sensor.entity_id,
+                        'attribute': 'last_advert_formatted',
+                        'name': time_ago
+                      },
+                      {
+                        'entity': sensor.entity_id,
+                        'attribute': 'node_type_str',
+                        'name': false
+                      }
+                    ] %}
+                    
+                    {% if hops != 'unavailable' and hops != 'unknown' %}
+                      {% set entities_list = entities_list + [{'entity': hop_sensor, 'name': 'Hops'}] %}
+                    {% endif %}
+                    
+                    {% set ns.entities = ns.entities + [{
+                      'entity': sensor.entity_id,
+                      'type': 'custom:multiple-entity-row',
+                      'state_color': false,
+                      'show_state': false,
+                      'entities': entities_list
+                    }] %}
+                  {% endif %}
+                {% endif %}
               {% endif %}
-              
-              {% set hop_sensor = 'sensor.meshcore_hops_' ~ pubkey %}
-              {% set hops = states(hop_sensor) %}
-              {% set snr = state_attr(hop_sensor, 'snr') %}
-              
-              {% set entities_list = [
-                {
-                  'entity': sensor.entity_id,
-                  'attribute': 'last_advert_formatted',
-                  'name': time_ago
-                },
-                {
-                  'entity': sensor.entity_id,
-                  'attribute': 'node_type_str',
-                  'name': false
-                }
-              ] %}
-              
-              {% if hops != 'unavailable' and hops != 'unknown' %}
-                {% set entities_list = entities_list + [{'entity': hop_sensor, 'name': 'Hops'}] %}
-              {% endif %}
-              
-              {% if snr is not none %}
-                {% set entities_list = entities_list + [{'entity': hop_sensor, 'attribute': 'snr', 'name': 'SNR'}] %}
-              {% endif %}
-              
-              {% set ns.entities = ns.entities + [{
-                'entity': sensor.entity_id,
-                'type': 'custom:multiple-entity-row',
-                'state_color': false,
-                'show_state': false,
-                'entities': entities_list
-              }] %}
             {% endif %}
-          {% endif %}
-        {% endif %}
-      {% endif %}
-    {% endfor %} {{ ns.entities }}
-sort:
-  method: attribute
-  attribute: last_advert
-  reverse: true
+          {% endfor %} {{ ns.entities }}
+      sort:
+        method: attribute
+        attribute: last_advert
+        reverse: true
+      grid_options:
+        columns: 24
+        rows: auto
+  - type: conditional
+    conditions:
+      - entity: input_select.meshcore_sort_by
+        state: Last Message
+    card:
+      type: custom:auto-entities
+      card:
+        type: entities
+        title: 💬 Meshcore Recent Messages Within The Last
+        card_mod:
+          style: |
+            ha-card .card-header {
+              --ha-card-header-font-size: 24px;
+            }
+            ha-card .card-header::after {
+              content: " ({% set h = states('input_number.meshcore_threshold_hours') | float %}{% if h < 1 %}{{ (h * 60) | int }}m{% else %}{% set days = (h / 24) | int %}{% set hours = (h % 24) | int %}{% if days > 0 %}{{ days }}d {{ hours }}h{% else %}{{ h | int }}h{% endif %}{% endif %}) - {% set threshold_sec = h * 3600 %}{% set now_ts = as_timestamp(now()) %}{% set count = states.sensor | selectattr('entity_id', 'match', 'sensor.meshcore_hops_') | selectattr('attributes.last_message_time', 'defined') | selectattr('attributes.last_message_time', 'gt', now_ts - threshold_sec) | list | count %}{{ count }} messages";
+            }
+      filter:
+        template: >
+          {% set threshold_hrs = states('input_number.meshcore_threshold_hours')
+          | float(12) %} {% set threshold_sec = threshold_hrs * 3600 %} {% set
+          now_ts = as_timestamp(now()) %} {% set ns = namespace(entities=[]) %}
+
+          {% for sensor in states.sensor %}
+            {% if 'meshcore_hops_' in sensor.entity_id %}
+              {% set last_message = sensor.attributes.get('last_message_time') %}
+              {% set sender_name = sensor.attributes.get('sender_name', 'Unknown') %}
+              
+              {% if last_message and last_message is number %}
+                {% if (now_ts - last_message) < threshold_sec %}
+                  {% set time_diff = now_ts - last_message %}
+                  {% set hours = (time_diff / 3600) | int %}
+                  {% set minutes = ((time_diff % 3600) / 60) | int %}
+                  {% set days = (hours / 24) | int %}
+                  {% if days > 0 %}
+                    {% set time_ago = days ~ 'd ' ~ (hours % 24) ~ 'h ago' %}
+                  {% elif hours > 0 %}
+                    {% set time_ago = hours ~ 'h ' ~ minutes ~ 'm ago' %}
+                  {% else %}
+                    {% set time_ago = minutes ~ 'm ago' %}
+                  {% endif %}
+                  
+                  {% set hops = sensor.state %}
+                  
+                  {% set ns.entities = ns.entities + [{
+                    'entity': sensor.entity_id,
+                    'type': 'custom:multiple-entity-row',
+                    'name': sender_name,
+                    'state_color': false,
+                    'show_state': false,
+                    'entities': [
+                      {
+                        'entity': sensor.entity_id,
+                        'attribute': 'last_message_formatted',
+                        'name': time_ago
+                      },
+                      {
+                        'entity': sensor.entity_id,
+                        'name': 'Hops'
+                      }
+                    ]
+                  }] %}
+                {% endif %}
+              {% endif %}
+            {% endif %}
+          {% endfor %} {{ ns.entities }}
+      sort:
+        method: attribute
+        attribute: last_message_time
+        reverse: true
 grid_options:
   columns: 24
   rows: auto
