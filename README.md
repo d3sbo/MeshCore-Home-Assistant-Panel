@@ -30,6 +30,9 @@ AppDaemon apps and dashboard cards for Home Assistant that enhance the MeshCore 
 ### Sort By Selection
 ![Sort By](dashboard/screenshots/meshcore-sort-by.png)
 
+### Recent Messages View
+![Recent Messages](dashboard/screenshots/meshcore-recent-messages.png)
+
 ## Requirements
 
 - Home Assistant with [MeshCore integration](https://github.com/meshcore-dev/meshcore-ha) installed
